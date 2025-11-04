@@ -1,144 +1,43 @@
-Distrait — PKMS + Task Manager (single-file)
-
-
-
-> Compact Personal Knowledge Management + Task Manager implemented in one Python script.
-
+### Distrait — PKMS + Task Manager
 
 
 Features
+- Task manager: add-task, list-tasks, list-completed, complete, remove, clear-tasks, clear-completed
+- Note manager: add-note, list-notes, search
 
-\- JSON-backed storage: `distrait\_tasks.json`, `distrait\_notes.json` (next to the script)
+Quick examples 
+# show help (help includes short usage examples)
+python distraitv2.py --help
 
-\- Task manager: add-task, list-tasks, complete, remove, clear-tasks
+# add a task (with priority, due date, and tags)
+python distraitv2.py add-task "Write assignment report" -p 2 --due 2025-12-01 --tags school,urgent
 
-\- Note manager: add-note, list-notes, search
+# list all tasks
+python distraitv2.py list-tasks
 
-\- Export / Import full state as JSON
+# mark a task complete (by id)
+python distraitv2.py complete 3
 
-\- Optional colored output if `colorama` is installed; otherwise graceful fallback
+# list completed tasks
+python distraitv2.py list-completed
 
+# remove a single task (by id)
+python distraitv2.py remove 3
 
+# remove a completed task by id
+python distraitv2.py clear-completed 3
 
-Quick examples (PowerShell)
+# clear all completed tasks (will prompt for confirmation)
+python distraitv2.py clear-completed
 
+# clear all tasks (will prompt for confirmation)
+python distraitv2.py clear-tasks
 
+# add a note (title and content)
+python distraitv2.py add-note "Lecture notes" "Ideas about project architecture" --tags notes,proj
 
-```powershell
+# list notes (shortened preview)
+python distraitv2.py list-notes
 
-\# show help
-
-python .\\distrait.py --help
-
-
-
-\# add a task
-
-python .\\distrait.py add-task "Write assignment report" -p 2 --due 2025-12-01 --tags school,urgent
-
-
-
-\# list tasks
-
-python .\\distrait.py list-tasks
-
-
-
-\# start interactive chat (smart search, summaries, quick add)
-
-python .\\distrait.py chat
-
-```
-
-
-
-Storage
-
-\- `distrait\_tasks.json` and `distrait\_notes.json` live next to `distrait.py`. They're plain JSON files you can edit or back up.
-
-
-
-Next steps
-
-\- Add more tests (integration)
-
-\- Add optional LLM integration for richer agent behavior
-
-
-
-
-
-Distrait is a simple program that helps you track important tasks in a JSON file 
-
-
-
-
-
-
-
-\\## Commands 
-
-
-
-
-
-
-
-\\# \\\*\\\*add\\\*\\\*
-
-
-
-
-
-
-
-Adds a new task to a JSON file
-
-
-
-i.e. \\\*python add "desired task here"
-
-
-
-
-
-
-
-\\# List
-
-
-
-
-
-
-
-Lists all tasks
-
-
-
-i.e. \\\*python list\\\*
-
-
-
-
-
-
-
-\\# Search
-
-
-
-
-
-
-
-Searches for a task
-
-
-
-i.e. \\\*python search keyword\\\*
-
-
-
-
-
+# search tasks and notes for a keyword
+python distraitv2.py search report

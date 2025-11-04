@@ -94,9 +94,7 @@ def list_tasks(show_all: bool = True):
         tags = f" [{', '.join(t.get('tags', []))}]" if t.get('tags') else ""
         print(f"({t['id']}) {status} [p:{t.get('priority',3)}]{due} {t['title']}{tags}")
 
-
 def list_completed():
-    """List only completed tasks."""
     tasks = load_json(TASKS_FILE)
     done = [t for t in tasks if t.get('status') == 'complete']
     if not done:
@@ -107,9 +105,7 @@ def list_completed():
         tags = f" [{', '.join(t.get('tags', []))}]" if t.get('tags') else ""
         print(f"({t['id']}) {t.get('title')} [p:{t.get('priority',3)}] completed:{t.get('completed_at')}{tags}")
 
-
 def clear_completed(task_id: Optional[int] = None):
-    """Remove completed tasks. If task_id is provided, remove that completed task only; otherwise remove all completed tasks after confirmation."""
     tasks = load_json(TASKS_FILE)
     if task_id is not None:
         new = [t for t in tasks if not (t.get('status') == 'complete' and t.get('id') == task_id)]
@@ -120,7 +116,6 @@ def clear_completed(task_id: Optional[int] = None):
         print(f"Removed completed task {task_id}.")
         return
 
-    # clear all completed
     completed = [t for t in tasks if t.get('status') == 'complete']
     if not completed:
         print("No completed tasks to clear.")
@@ -214,132 +209,22 @@ def search(query: str):
         print("No note matches.")
 
 
-def export_all(path: Path):
-    data = {
-        'tasks': load_json(TASKS_FILE),
-        'notes': load_json(NOTES_FILE)
-    }
-    save_json(path, [data])  # wrap so file is JSON array; keeps save_json signature
-    print(f"Exported data to {path}")
-
-
-def import_file(path: Path):
-    if not path.exists():
-        print(f"Import file {path} not found.")
-        return
-    try:
-        with path.open('r', encoding='utf-8') as f:
-            content = json.load(f)
-            # allow either wrapped array or direct dict
-            if isinstance(content, list) and content:
-                content = content[0]
-            tasks = content.get('tasks', [])
-            notes = content.get('notes', [])
-            save_json(TASKS_FILE, tasks)
-            save_json(NOTES_FILE, notes)
-            print(f"Imported tasks and notes from {path}")
-    except Exception as e:
-        print(f"Failed to import: {e}")
-
-
-# Simple heuristic agents
-def agent_suggest(task_count: int = 3):
-    tasks = load_json(TASKS_FILE)
-    pending = [t for t in tasks if t.get('status') != 'complete']
-    # score by priority and proximity of due date
-    def score(t):
-        s = 100 - int(t.get('priority', 3)) * 10
-        due = t.get('due')
-        if due:
-            try:
-                dd = datetime.datetime.fromisoformat(due)
-                days = (dd - datetime.datetime.now()).days
-                s += max(0, 30 - days)
-            except Exception:
-                pass
-        return s
-
-    picked = sorted(pending, key=lambda t: -score(t))[:task_count]
-    if not picked:
-        print("No pending tasks to suggest.")
-        return
-    print(f"{Fore.CYAN}Suggested next tasks:{Fore.RESET}")
-    for t in picked:
-        print(f"({t['id']}) {t['title']} [p:{t.get('priority')}] due:{t.get('due')}")
-
-
-def agent_summarize_notes(query: Optional[str] = None, max_chars: int = 800):
-    notes = load_json(NOTES_FILE)
-    if query:
-        notes = [n for n in notes if query.lower() in (n.get('title','') + ' ' + n.get('content','')).lower()]
-    if not notes:
-        print("No notes to summarize.")
-        return
-    # naive summary: concatenate top N, shorten
-    merged = "\n\n".join(n.get('title','') + "\n" + n.get('content','') for n in notes)
-    print(f"{Style.BRIGHT}{Fore.MAGENTA}Notes summary:{Style.RESET_ALL}\n")
-    print(textwrap.shorten(merged, width=max_chars, placeholder='...'))
-
-
-def chat_interface():
-    print(f"{Style.BRIGHT}{Fore.CYAN}Distrait Chat — type 'help' for commands, 'exit' to quit{Style.RESET_ALL}")
-    while True:
-        try:
-            line = input('> ').strip()
-        except EOFError:
-            print('\nBye')
-            return
-        if not line:
-            continue
-        if line.lower() in ('exit','quit'):
-            print('Bye')
-            return
-        if line.lower() == 'help':
-            print("Commands: search <q>, suggest, summarize [q], tasks, notes, addtask <title>, addnote <title>|<content>")
-            continue
-        if line.startswith('search '):
-            search(line[len('search '):])
-            continue
-        if line == 'suggest':
-            agent_suggest()
-            continue
-        if line.startswith('summarize'):
-            parts = line.split(' ',1)
-            q = parts[1] if len(parts)>1 else None
-            agent_summarize_notes(q)
-            continue
-        if line == 'tasks':
-            list_tasks()
-            continue
-        if line == 'completed':
-            list_completed()
-            continue
-        if line.startswith('clear-completed'):
-            parts = line.split(' ',1)
-            if len(parts) > 1 and parts[1].strip().isdigit():
-                clear_completed(int(parts[1].strip()))
-            else:
-                clear_completed()
-            continue
-        if line == 'notes':
-            list_notes()
-            continue
-        if line.startswith('addtask '):
-            add_task(line[len('addtask '):])
-            continue
-        if line.startswith('addnote '):
-            payload = line[len('addnote '):]
-            if '|' in payload:
-                title, content = payload.split('|',1)
-                add_note(title.strip(), content.strip())
-            else:
-                print("Use: addnote title|content")
-            continue
-        print("Unknown chat command. Type 'help'.")
+# (Removed: export/import, chat, and simple agent helpers - these were removed per user request.)
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description='Distrait — PKMS + Task manager + Chat (single-file)')
+    examples = (
+        "Examples:\n"
+        "  python distraitv2.py add-task \"Buy milk\" -p 2 --due 2025-12-01 --tags personal,errand\n"
+        "  python distraitv2.py list-tasks\n"
+        "  python distraitv2.py complete 3\n"
+        "  python distraitv2.py list-notes\n"
+    )
+    p = argparse.ArgumentParser(
+        description='Distrait — PKMS + Task manager (single-file)',
+        epilog=examples,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     sub = p.add_subparsers(dest='cmd')
 
     sp = sub.add_parser('add-task', help='Add a new task')
@@ -349,7 +234,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument('--tags', help='Comma separated tags')
 
     sub.add_parser('list-tasks', help='List tasks')
+
+    # completed-tasks helpers
     sub.add_parser('list-completed', help='List completed tasks')
+    sc = sub.add_parser('clear-completed', help='Clear completed tasks')
+    sc.add_argument('id', nargs='?', type=int, help='ID of completed task to remove (omit to clear all)')
 
     spc = sub.add_parser('complete', help='Mark a task complete')
     spc.add_argument('id', type=int)
@@ -358,8 +247,6 @@ def build_parser() -> argparse.ArgumentParser:
     spr.add_argument('id', type=int)
 
     sub.add_parser('clear-tasks', help='Clear all tasks')
-    sc = sub.add_parser('clear-completed', help='Clear completed tasks')
-    sc.add_argument('id', nargs='?', type=int, help='ID of completed task to remove (omit to clear all)')
 
     sn = sub.add_parser('add-note', help='Add a note')
     sn.add_argument('title')
@@ -370,20 +257,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     ssearch = sub.add_parser('search', help='Search tasks and notes')
     ssearch.add_argument('query', nargs='+')
-
-    ss = sub.add_parser('suggest', help='Agent: suggest next tasks')
-    ss.add_argument('--n', type=int, default=3)
-
-    ssum = sub.add_parser('summarize', help='Agent: summarize notes')
-    ssum.add_argument('query', nargs='*')
-
-    sub.add_parser('chat', help='Start the interactive chat interface')
-
-    sex = sub.add_parser('export', help='Export tasks+notes to JSON file')
-    sex.add_argument('path')
-
-    six = sub.add_parser('import', help='Import tasks+notes from JSON file')
-    six.add_argument('path')
+    
 
     return p
 
@@ -399,17 +273,12 @@ def main(argv: Optional[List[str]] = None):
         add_task(title, priority=args.priority, due=args.due, tags=tags)
     elif args.cmd == 'list-tasks':
         list_tasks()
-    elif args.cmd == 'list-completed':
-        list_completed()
     elif args.cmd == 'complete':
         complete_task(args.id)
     elif args.cmd == 'remove':
         remove_task(args.id)
     elif args.cmd == 'clear-tasks':
         clear_tasks()
-    elif args.cmd == 'clear-completed':
-        # args.id may be None; clear_completed handles confirmation
-        clear_completed(getattr(args, 'id', None))
     elif args.cmd == 'add-note':
         tags = [t.strip() for t in args.tags.split(',')] if getattr(args, 'tags', None) else []
         add_note(args.title, args.content, tags=tags)
@@ -418,18 +287,13 @@ def main(argv: Optional[List[str]] = None):
     elif args.cmd == 'search':
         q = ' '.join(args.query)
         search(q)
-    elif args.cmd == 'suggest':
-        agent_suggest(getattr(args, 'n', 3))
-    elif args.cmd == 'summarize':
-        q = ' '.join(args.query) if getattr(args, 'query', None) else None
-        agent_summarize_notes(q)
-    elif args.cmd == 'chat' or args.cmd is None:
-        # default to interactive chat if no command provided
-        chat_interface()
-    elif args.cmd == 'export':
-        export_all(Path(args.path))
-    elif args.cmd == 'import':
-        import_file(Path(args.path))
+    elif args.cmd == 'list-completed':
+        list_completed()
+    elif args.cmd == 'clear-completed':
+        clear_completed(getattr(args, 'id', None))
+    elif args.cmd is None:
+        # no subcommand provided: show help
+        parser.print_help()
     else:
         parser.print_help()
 
