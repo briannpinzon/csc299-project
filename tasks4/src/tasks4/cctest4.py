@@ -18,7 +18,7 @@ def summarize_with_openai(paragraph: str, model: str = "chatgpt-5-mini") -> Opti
 
     Returns the phrase on success, or None if the API key is missing or the HTTP call failed.
     """
-    api_key = os.getenv(OPENAI_API_KEY)
+    api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         return None
     if requests is None:
@@ -32,12 +32,12 @@ def summarize_with_openai(paragraph: str, model: str = "chatgpt-5-mini") -> Opti
 
     system_prompt = (
         "You are a concise summarizer.\n"
-        "Given a paragraph describing a task, return a very short phrase (3-6 words) that captures the task.\n"
+        "Given a paragraph describing a task, return a very short phrase (12-16 words) that captures the task.\n"
         "Return only the short phrase — no explanation, no punctuation at the end."
     )
 
     user_prompt = (
-        "Paragraph:\n\n" + paragraph + "\n\nSummarize the above paragraph as a short phrase (no more than 6 words)."
+        "Paragraph:\n\n" + paragraph + "\n\nSummarize the above paragraph as a short phrase (no more than 16 words)."
     )
 
     payload = {
@@ -66,7 +66,7 @@ def summarize_with_openai(paragraph: str, model: str = "chatgpt-5-mini") -> Opti
 def simulated_summary(paragraph: str) -> str:
     """Produce a simple short-phrase fallback summary without calling the API.
 
-    This is intentionally simple: we take the first sentence and extract up to 6 important words.
+    This is intentionally simple: we take the first sentence and extract up to 16 important words.
     """
     # Normalize whitespace and get first sentence
     text = " ".join(paragraph.split())
