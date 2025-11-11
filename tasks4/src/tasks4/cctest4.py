@@ -18,7 +18,7 @@ def summarize_with_openai(paragraph: str, model: str = "chatgpt-5-mini") -> Opti
 
     Returns the phrase on success, or None if the API key is missing or the HTTP call failed.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv(OPENAI_API_KEY)
     if not api_key:
         return None
     if requests is None:
