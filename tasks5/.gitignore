@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+names.json
+.DS_Store
+/.mypy_cache
