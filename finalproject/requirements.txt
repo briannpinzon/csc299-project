@@ -1,0 +1,3 @@
+# No mandatory runtime dependencies.
+# Add optional test dependency:
+pytest>=7.0.0
