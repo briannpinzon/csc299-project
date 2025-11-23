@@ -76,6 +76,14 @@ def cmd_list_tasks(args):
         _print_task(t)
 
 
+def cmd_search_tasks(args):
+    sm = StorageManager(args.data_dir)
+    q = args.query.strip() if args.query else None
+    results = sm.search_tasks(query=q, status=args.status)
+    for t in results:
+        _print_task(t)
+
+
 def cmd_complete_task(args):
     sm = StorageManager(args.data_dir)
     try:
@@ -260,6 +268,11 @@ def build_parser() -> argparse.ArgumentParser:
     a = sub.add_parser("list-tasks")
     a.add_argument("--status", choices=["todo", "in-progress", "done"])
     a.set_defaults(func=cmd_list_tasks)
+
+    a = sub.add_parser("search-tasks")
+    a.add_argument("query", nargs="?", default="")
+    a.add_argument("--status", choices=["todo", "in-progress", "done"], help="Filter by task status")
+    a.set_defaults(func=cmd_search_tasks)
 
     a = sub.add_parser("complete-task")
     a.add_argument("id")

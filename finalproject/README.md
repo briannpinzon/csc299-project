@@ -15,6 +15,13 @@ python pkms_cli.py add-note "Meeting" "Agenda: discuss roadmap" --tags "work,mee
 python pkms_cli.py list-notes
 python pkms_cli.py add-task "Finish report" --description "Finalize figures" --due "2025-11-25"
 python pkms_cli.py list-tasks
+python pkms_cli.py search-tasks "report" --status todo
+
+Summarization examples:
+```powershell
+python pkms_cli.py summarize-note <note-id> --save --notebook "meetings"
+python pkms_cli.py summarize-note <note-id> --save --accept --notebook "meetings"
+```
 ```
 
 2) Data files are stored in the default user data directory:

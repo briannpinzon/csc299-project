@@ -137,6 +137,21 @@ class StorageManager:
     def mark_complete(self, task_id: str) -> Task:
         return self.update_task(task_id, status="done")
 
+    def search_tasks(self, query: Optional[str] = None, status: Optional[str] = None) -> List[Task]:
+        """Search tasks by keyword in title or description and optional status filter."""
+        q = query.lower().strip() if query else None
+        results: List[Task] = []
+        for t in self.list_tasks():
+            if status and t.status != status:
+                continue
+            if not q:
+                results.append(t)
+                continue
+            hay = " ".join([t.title, t.description]).lower()
+            if q in hay:
+                results.append(t)
+        return results
+
     # Backup / restore helpers
     def export(self, out_path: str) -> None:
         data = {"notes": [n.to_dict() for n in self.list_notes()], "tasks": [t.to_dict() for t in self.list_tasks()]}
