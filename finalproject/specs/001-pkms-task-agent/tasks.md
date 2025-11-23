@@ -87,7 +87,7 @@ Independent Test: Send a long note to summarize; verify summary note created and
 ### Implementation
 - [x] T026 [P] [US3] Implement `summarize_text` and `suggest_tasks` heuristics in `pkms/agent.py` — file: `pkms/agent.py`
 - [x] T027 [US3] Add `summarize-note` CLI command with `--accept` option to auto-create suggested tasks in `pkms/cli.py` — file: `pkms/cli.py`
-- [ ] T028 [US3] Add metadata attribution for agent-created tasks and notes (source=agent) in models/storage — files: `pkms/models.py`, `pkms/storage.py`
+- [x] T028 [US3] Add metadata attribution for agent-created tasks and notes (source=agent) in models/storage — files: `pkms/models.py`, `pkms/storage.py`
 - [ ] T029 [US3] (Optional) Add integration with external AI providers configurable via `README.md` and `pkms/config.py` (if needed) — files: `pkms/config.py`, `README.md`
 
 Checkpoint: US3 produces testable summaries and task suggestions

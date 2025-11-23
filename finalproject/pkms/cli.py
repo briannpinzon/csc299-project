@@ -103,7 +103,10 @@ def cmd_summarize(args):
     if getattr(args, "save", False):
         # Save the summary as a new note attributed to the agent
         summary_title = f"Summary: {note.title}" if note.title else "Summary"
-        summary_note = Note.create(title=summary_title, body=summary, tags=["summary", "agent"], source="agent")
+        tags = ["summary", "agent"]
+        if getattr(args, "notebook", None):
+            tags.append(f"notebook:{args.notebook}")
+        summary_note = Note.create(title=summary_title, body=summary, tags=tags, source="agent")
         sm.add_note(summary_note)
         print("Saved summary as note:")
         _print_note(summary_note)
@@ -268,6 +271,7 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("--max-suggestions", type=int, default=3)
     a.add_argument("--accept", action="store_true", help="Auto-accept first suggestion and create a task")
     a.add_argument("--save", action="store_true", help="Save the generated summary as a new note (source=agent)")
+    a.add_argument("--notebook", help="Name of notebook to tag the saved summary into (adds tag notebook:<name>)")
     a.set_defaults(func=cmd_summarize)
 
     a = sub.add_parser("update-note")
