@@ -333,10 +333,73 @@ def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):
-        parser.print_help()
+        # Show a compact, human-friendly startup screen with commands
+        try:
+            show_startup(parser)
+        except Exception:
+            parser.print_help()
         return 1
     try:
         return args.func(args)
     except Exception as exc:
         print("Error:", exc, file=sys.stderr)
         return 2
+
+
+def show_startup(parser: argparse.ArgumentParser):
+    """Print an easy-to-read startup screen listing commands and their parameters.
+
+    This inspects the subparsers registered on `parser` and prints a simple
+    table with command, positional arguments, and options.
+    """
+    # Find the SubParsers action
+    subparsers_action = None
+    for a in parser._actions:
+        # use class name to avoid importing private types
+        if a.__class__.__name__ == "_SubParsersAction":
+            subparsers_action = a
+            break
+    if not subparsers_action:
+        parser.print_help()
+        return
+
+    entries = []
+    for name, subp in sorted(subparsers_action.choices.items()):
+        pos_args = []
+        opts = []
+        for act in subp._actions:
+            if act.dest == "help":
+                continue
+            if act.option_strings:
+                # Option/flag
+                opt = ",".join(act.option_strings)
+                # heuristically show if option expects a value
+                if not isinstance(act.default, bool):
+                    opt = f"{opt} <{act.dest}>"
+                opts.append(opt)
+            else:
+                # Positional
+                if act.nargs in ("?", "*"):
+                    pos_args.append(f"[{act.dest}]")
+                elif act.nargs == "+":
+                    pos_args.append(f"{act.dest}+")
+                else:
+                    pos_args.append(f"<{act.dest}>")
+
+        entries.append((name, " ".join(pos_args), " ".join(opts)))
+
+    # Column widths
+    cmd_w = max((len(e[0]) for e in entries), default=7)
+    pos_w = max((len(e[1]) for e in entries), default=11)
+    opt_w = max((len(e[2]) for e in entries), default=7)
+
+    total_w = cmd_w + pos_w + opt_w + 8
+    print("=" * total_w)
+    title = "PKMS — Notes & Tasks (CLI)"
+    print(title.center(total_w))
+    print("=" * total_w)
+    print(f"{ 'Command'.ljust(cmd_w) }  { 'Positional'.ljust(pos_w) }  { 'Options'.ljust(opt_w) }")
+    print("-" * total_w)
+    for cmd, pos, opt in entries:
+        print(f"{cmd.ljust(cmd_w)}  {pos.ljust(pos_w)}  {opt.ljust(opt_w)}")
+    print("\nFor details: `pkms <command> --help`")
