@@ -153,11 +153,4 @@ Running tests
 
 ```powershell
 pytest -q
-```
-
-Notes & Next steps
-- The `pkms.agent` module is intentionally a replaceable stub — swap in an external provider or local model if you need better summaries or suggestions.
-- If you'd like, I can also add short help text to each subparser so the startup screen shows a one-line description for each command.
-
-License / Contributing
-- This project is a small educational prototype. Update `requirements.txt` and add CI linting as desired.
+'''
