@@ -1,0 +1,14 @@
+###Development process 
+
+##Methods Used
+
+Throughout the quarter, I had been using Gemini pro and the VSCode assistant to write a lot of the code. Google workers came to DePaul in September and I got a free 1 year premium subscription. I assume there was no limit to code it could produce or questions I could ask it because it never stopped me. Gemini was great in the early going when the only thing we had to do were simple tasks, but for the final project I had to try something else because Gemini was generating good code, but I assumed it couldn't produce a full project. I found a better method for that. As for VSCode, it was good too but I didn't have premium so chats I had to pick my prompts wisely as to not waste them, and writing VSCode by just asking the AI some stuff worked, but it wasn't efficient and it also wouldn't have worked for a full project. I also tried ChatGPT for a short time, but it was not as useful as VSCode or Gemini.
+
+##Missteps and Fixes
+
+I bought 5 dollars worth of tokens for tasks 4 and I put the key into VSCode because I figured that I would earn the choice to use Google agents but it didn't work. I bet the final result would've been better. 
+I made a lot of errors with GitHub and Git Bash but I did manage to fix them. Early on, my main and master branches were in terrible shape, with one branch being both ahead and behind of the other in terms of commits. I tried to solve it myself but I wasn't making any progress, so I asked Gemini and I found my solution which was just to merge them. I almost made this same mistake with the final project too, as VSCode made a whole new branch instead of adding to a folder that I had in Main. I merged them again and now that fixed it. 
+
+##THE Method 
+Still on VSCode and still with the AI assistant, I moved on and tried the Spec-Kit method. We learned this near the end of the quarter but it was by far the most success I had with using AI and making it create something by this point. It was also a very easy process. Following the steps on the Detailed Process part of the repository barely had me writing, just copying prompts and editing them slightly to describe the final project. I used GPT-mini as my assistant agent and it worked well. I also used the most recent version rather than the version we had used in class, I figured it would work the same. Spec-kit is the best way to go about a project like this as far as I know. It's extremely easy to use and the planning docs kept me from having to repeat myself over and over again, The AI also had a better idea of suggestions for me to implement next. Gemini and VSCode with no planning docs or anything like that had less clues and less suggestions than using spec-kit planning. If I had to do another project like this, I'd use spec-kit again.
+
